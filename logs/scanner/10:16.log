@@ -1,0 +1,11 @@
+===================================================
+10:16:02 : START
+===================================================
+10:16:02 : PROCESSING INSTRUMENTS SYMBOLS
+-----------------------------------------------
+Traceback (most recent call last):
+  File "scanner.py", line 470, in <module>
+    scanning()
+  File "scanner.py", line 90, in scanning
+    if(response['data']['candles'] and response["status"] == "success"):
+TypeError: 'NoneType' object is not subscriptable
