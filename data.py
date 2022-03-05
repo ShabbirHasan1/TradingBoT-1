@@ -34,8 +34,8 @@ def scanning():
     df_symbols = pd.read_csv('master/instruments.csv')
     # from_date = datetime.now().strftime('%Y-%m-%d')
     # to_date = datetime.now().strftime('%Y-%m-%d')
-    from_date = "2022-01-20"
-    to_date = "2022-01-20"
+    from_date = "2022-03-04"
+    to_date = "2022-03-04"
     for index, row in df_symbols.iterrows():
         endpoint = "https://kite.zerodha.com/oms/instruments/historical/"
         code = str(row["instrument_token"])
