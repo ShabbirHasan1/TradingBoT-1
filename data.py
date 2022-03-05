@@ -34,12 +34,13 @@ def scanning():
     df_symbols = pd.read_csv('master/instruments.csv')
     # from_date = datetime.now().strftime('%Y-%m-%d')
     # to_date = datetime.now().strftime('%Y-%m-%d')
-    from_date = "2021-12-17"
-    to_date = "2021-12-17"
+    from_date = "2022-01-20"
+    to_date = "2022-01-20"
     for index, row in df_symbols.iterrows():
         endpoint = "https://kite.zerodha.com/oms/instruments/historical/"
         code = str(row["instrument_token"])
-        interval = "/5minute"
+        # interval = "/5minute"
+        interval = "/minute"
         headers = {'content-type': 'application/json',
                    "authorization": kite_token}
         url = endpoint + code + interval

@@ -16,18 +16,18 @@ print("===================================================")
 
 orders_array = []
 open_orders = []
-won = []
-lost = []
+# won = 0
+# lost = 0
 aroonosc_min = -50
 aroonosc_max = 50
 adx = 50
-capital = 240000
+capital = 15000
 frequency = 10
 qty_one = "off"
 qty_max = 100000
-volume_filter = 20000
-price_filter_min = 100
-price_filter_max = 25000
+volume_filter = 5
+price_filter_min = 5
+price_filter_max = 5000
 
 # https://tradeciety.com/10-most-profitable-candlestick-signals/
 # https://www.ig.com/en/trading-strategies/16-candlestick-patterns-every-trader-should-know-180615
@@ -45,7 +45,7 @@ def scanning():
 
         if(df[df.columns[0]].count()):
 
-            # tech analysis ends
+            # tech analysis starts
             df["ADX"] = tal.ADX(
                 high=df["high"], low=df["low"], close=df["close"])
             df["AROONOSC"] = tal.AROONOSC(high=df["high"], low=df["low"])
@@ -61,7 +61,6 @@ def scanning():
                 df["open"], df["high"], df["low"], df["close"])
             df["CDLHARAMI"] = tal.CDLHARAMI(
                 df["open"], df["high"], df["low"], df["close"])
-
             # tech analysis ends
 
             signal(row["tradingsymbol"], df)
@@ -86,7 +85,7 @@ def signal(symbol, data):
                 temp = 0
                 if(row["high"] > order["target"]):
                     if(temp == 0):
-                        won.append(1)
+                        # won = won + 1
                         order["trigger"] = row["high"]
                         order["result"] = 1
                         order["exit"] = row["timestamp"]
@@ -100,7 +99,7 @@ def signal(symbol, data):
                         temp = 1
                 if(row["low"] < order["stoploss"]):
                     if(temp == 0):
-                        lost.append(0)
+                        # lost = lost + 1
                         order["trigger"] = row["low"]
                         order["result"] = 0
                         order["exit"] = row["timestamp"]
@@ -116,7 +115,7 @@ def signal(symbol, data):
                 temp = 0
                 if(row["low"] < order["target"]):
                     if(temp == 0):
-                        won.append(1)
+                        # won = won + 1
                         order["trigger"] = row["low"]
                         order["result"] = 1
                         order["exit"] = row["timestamp"]
@@ -130,7 +129,7 @@ def signal(symbol, data):
                         temp = 1
                 if(row["high"] > order["stoploss"]):
                     if(temp == 0):
-                        lost.append(0)
+                        # lost = lost + 1
                         order["trigger"] = row["high"]
                         order["result"] = 0
                         order["exit"] = row["timestamp"]
@@ -152,15 +151,6 @@ def signal(symbol, data):
                 orderType = ""
                 candleType = ""
 
-                # if ((row["AROONOSC"] > aroonosc_max)):
-                #     orderType = "SELL"
-                #     target = price - (row["ATR"]/4)
-                #     stoploss = price + (row["ATR"]/4)
-
-                # if ((row["AROONOSC"] < aroonosc_min)):
-                #     orderType = "BUY"
-                #     target = price + (row["ATR"]/4)
-                #     stoploss = price - (row["ATR"]/4)
    
                 if ((row["AROONOSC"] > aroonosc_max) and (row["close"] > row["open"])):  # uptrend 
                 # if ((row["AROONOSC"] > aroonosc_max) and ((row["CDLDOJI"] > 100) or (row["CDLENGULFING"] > 100) or (row["CDLMORNINGSTAR"] > 100) or (row["CDLHAMMER"] > 100) or (row["CDLHARAMI"] > 100))):   # uptrend
@@ -190,35 +180,6 @@ def signal(symbol, data):
                     else:
                         orderType = ""
 
-                # if ((row["AROONOSC"] > aroonosc_max) and (row["low"] == row["open"]) and (row["high"] == row["close"])):  # uptrend
-                #     orderType = "BUY"
-                #     target = row["close"]
-                #     stoploss = row["open"]
-                #     candleType = "green rectangle"
-
-                # if ((row["AROONOSC"] < aroonosc_min) and (row["high"] == row["open"]) and (row["low"] == row["close"])):  # downtrend
-                #     orderType = "SELL"
-                #     target = row["close"]
-                #     stoploss = row["open"]
-                #     candleType = "red rectangle"
-
-                # if ((row["AROONOSC"] > aroonosc_max) and (row["open"] == row["close"])):
-                #     candleType = "nutral up doji"
-                #     candle_upper = abs(row["high"]-row["close"])
-                #     candle_lower = abs(row["open"]-row["low"])
-                #     if(candle_upper < candle_lower):
-                #         orderType = "BUY"
-                #         target = row["high"]
-                #         stoploss = row["low"]
-
-                # if ((row["AROONOSC"] < aroonosc_min) and (row["open"] == row["close"])):
-                #     candleType = "nutral down doji"
-                #     candle_upper = abs(row["high"]-row["close"])
-                #     candle_lower = abs(row["open"]-row["low"])
-                #     if(candle_upper > candle_lower):
-                #         orderType = "SELL"
-                #         target = row["low"]
-                #         stoploss = row["high"]
 
                 if(orderType == "BUY" or orderType == "SELL"):
                     # RMS
@@ -235,7 +196,7 @@ def signal(symbol, data):
 
                     margin = capital * 2.5
                     total_price = qty * price
-                    # print("QTY : "+str(qty))
+
                     if(total_price > margin):
                         qty = round((margin / price), 0)
 
@@ -269,7 +230,6 @@ def signal(symbol, data):
 
                         if(hours > 10 and hours < 15):
                             open_orders.append(symbol)
-                            # print("candle : "+str(order["CDLDOJI"]))
                             log("ORDER FOUND > "+str(timestamp)+" : "+order["type"]+" @ "+str(
                                 order["price"])+" / SL: "+str(order["stoploss"])+" / TAR : "+str(order["target"])+"/ QTY : "+str(order["qty"])+" / "+str(symbol)+"")
 
@@ -305,7 +265,7 @@ log("END")
 print("===================================================")
 end_time = datetime.now()
 time_taken = divmod((end_time-start_time).total_seconds(), 60)[0]
-print("Statistics     : "+str(won.count)+" : "+str(lost.count))
+# print("Statistics     : "+str(won)+" : "+str(lost))
 print("Start Time     : "+str(start_time))
 print("End Time       : "+str(end_time))
 print("Time Taken     : "+str(time_taken))
