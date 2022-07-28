@@ -3,7 +3,7 @@ from datetime import datetime
 import requests
 import json
 import talib as tal
-
+from os.path import exists
 
 def log(message):
     print(datetime.now().strftime('%I:%M:%S')+" : "+message)
@@ -21,7 +21,7 @@ open_orders = []
 aroonosc_min = -50
 aroonosc_max = 50
 adx = 50
-capital = 15000
+capital = 200000
 frequency = 10
 qty_one = "off"
 qty_max = 100000
@@ -38,32 +38,34 @@ def scanning():
 
     for index, row in df_symbols.iterrows():
 
-        response = pd.read_csv("data/"+row["tradingsymbol"]+".csv", usecols=[
-                               'timestamp', 'open', 'high', 'low', 'close', 'volume', 'oi'])
+        if(exists("data/"+row["tradingsymbol"]+".csv")):
 
-        df = pd.DataFrame(response)
+            response = pd.read_csv("data/"+row["tradingsymbol"]+".csv", usecols=[
+                                'timestamp', 'open', 'high', 'low', 'close', 'volume', 'oi'])
 
-        if(df[df.columns[0]].count()):
+            df = pd.DataFrame(response)
 
-            # tech analysis starts
-            df["ADX"] = tal.ADX(
-                high=df["high"], low=df["low"], close=df["close"])
-            df["AROONOSC"] = tal.AROONOSC(high=df["high"], low=df["low"])
-            df["ATR"] = tal.ATR(
-                high=df["high"], low=df["low"], close=df["close"])
-            df["CDLDOJI"] = tal.CDLDOJI(
-                df["open"], df["high"], df["low"], df["close"])
-            df["CDLENGULFING"] = tal.CDLENGULFING(
-                df["open"], df["high"], df["low"], df["close"])
-            df["CDLMORNINGSTAR"] = tal.CDLMORNINGSTAR(
-                df["open"], df["high"], df["low"], df["close"])
-            df["CDLHAMMER"] = tal.CDLHAMMER(
-                df["open"], df["high"], df["low"], df["close"])
-            df["CDLHARAMI"] = tal.CDLHARAMI(
-                df["open"], df["high"], df["low"], df["close"])
-            # tech analysis ends
+            if(df[df.columns[0]].count()):
 
-            signal(row["tradingsymbol"], df)
+                # tech analysis starts
+                df["ADX"] = tal.ADX(
+                    high=df["high"], low=df["low"], close=df["close"])
+                df["AROONOSC"] = tal.AROONOSC(high=df["high"], low=df["low"])
+                df["ATR"] = tal.ATR(
+                    high=df["high"], low=df["low"], close=df["close"])
+                df["CDLDOJI"] = tal.CDLDOJI(
+                    df["open"], df["high"], df["low"], df["close"])
+                df["CDLENGULFING"] = tal.CDLENGULFING(
+                    df["open"], df["high"], df["low"], df["close"])
+                df["CDLMORNINGSTAR"] = tal.CDLMORNINGSTAR(
+                    df["open"], df["high"], df["low"], df["close"])
+                df["CDLHAMMER"] = tal.CDLHAMMER(
+                    df["open"], df["high"], df["low"], df["close"])
+                df["CDLHARAMI"] = tal.CDLHARAMI(
+                    df["open"], df["high"], df["low"], df["close"])
+                # tech analysis ends
+
+                signal(row["tradingsymbol"], df)
 
     df_orders = pd.DataFrame(orders_array, columns=['timestamp', 'instrument',  'price', 'type',
                                                     'target', 'stoploss', 'qty', 'result', 'exit', 'trigger',
@@ -151,7 +153,7 @@ def signal(symbol, data):
                 orderType = ""
                 candleType = ""
 
-   
+#    formula 1
                 if ((row["AROONOSC"] > aroonosc_max) and (row["close"] > row["open"])):  # uptrend 
                 # if ((row["AROONOSC"] > aroonosc_max) and ((row["CDLDOJI"] > 100) or (row["CDLENGULFING"] > 100) or (row["CDLMORNINGSTAR"] > 100) or (row["CDLHAMMER"] > 100) or (row["CDLHARAMI"] > 100))):   # uptrend
                     orderType = "BUY"
@@ -165,7 +167,7 @@ def signal(symbol, data):
                         candleType = "green doji"
                     else:
                         orderType = ""
-
+# formula 2
                 if ((row["AROONOSC"] < aroonosc_min) and (row["close"] < row["open"])):  # downtrend 
                 # if ((row["AROONOSC"] < aroonosc_min) and ((row["CDLDOJI"] < -100) or (row["CDLENGULFING"] < -100) or (row["CDLMORNINGSTAR"] < -100) or (row["CDLHAMMER"] < -100) or (row["CDLHARAMI"] < -100))):
                     orderType = "SELL"
@@ -246,7 +248,7 @@ def calculateBrokerage(turnover):
     brokerage = (0.03*turnover) / 100
     if(brokerage > 20):
         brokerage = 20
-    # brokerage = 0
+    #brokerage = 0
     stt_ctt = (0.025*turnover) / 100
     transaction_charges = (0.00345*turnover) / 100
     gst = (18*(transaction_charges+brokerage)) / 100

@@ -55,7 +55,7 @@ def cancel_order(order_id):
     print("-------------------")
 
 
-def cleaing():
+def cleaning():
     log("PROCESSING START")
     endpoint = "https://kite.zerodha.com/oms/orders"
     headers = {'content-type': 'application/json',
@@ -73,7 +73,7 @@ def cleaing():
     return
 
 
-cleaing()
+cleaning()
 
 print("===================================================")
 log("END")
