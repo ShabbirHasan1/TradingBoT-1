@@ -20,8 +20,9 @@ with open("token.json") as json_file:
     json_data = json.load(json_file)
     kite_token = json_data["kite_token"]
 
-# from_date = datetime.now().strftime('%Y-%m-%d')
-from_date = "2022-08-02"
+# from_date = datetime.
+# now().strftime('%Y-%m-%d')
+from_date = "2022-08-01"
 to_date = datetime.now().strftime('%Y-%m-%d')
 aroonosc_min = -35
 aroonosc_max = 35
@@ -81,8 +82,8 @@ def scanning():
                     high=df["high"], low=df["low"], close=df["close"])
                 df["AROONOSC"] = tal.AROONOSC(
                     high=df["high"], low=df["low"], timeperiod=14)
-                # df["ATR"] = tal.ATR(high=df["high"], low=df["low"], close=df["close"])
-                # df["RSI"] = tal.RSI(df['close'])
+                df["ATR"] = tal.ATR(high=df["high"], low=df["low"], close=df["close"])
+                df["RSI"] = tal.RSI(df['close'])
                 # df["CDLDOJI"] = tal.CDLDOJI(df["open"],df["high"],df["low"],df["close"])
                 # tech analysis ends
 
@@ -90,7 +91,6 @@ def scanning():
 
         else:
             print("No data available")
-
     return
 
 
