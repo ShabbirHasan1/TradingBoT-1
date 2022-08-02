@@ -23,9 +23,9 @@ with open("token.json") as json_file:
 # from_date = datetime.now().strftime('%Y-%m-%d')
 from_date = "2022-08-02"
 to_date = datetime.now().strftime('%Y-%m-%d')
-aroonosc_min = -50
-aroonosc_max = 50
-adx = 50
+aroonosc_min = -35
+aroonosc_max = 35
+adx = 35
 min_candle_time = 60
 max_candle_time = 240
 capital = 10000
