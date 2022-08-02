@@ -16,50 +16,32 @@ start_time = datetime.now()
 log("START")
 print("===================================================")
 
-# todo take (back test, live test for 1 week before 10k)
-# https://chartink.com/screener/open-equals-high-open-equals-low#:~:text=New%3A%20LIVE%20Alerts%20now%20available,Latest%20Open%20Equals%20Latest%20Low
-# research on circuit rider above 5%+ at 9:15/20/25 candles (just soft call as its risky)
-# indigo , icicipruli : research on circit breaker if above 6% can play reverse with low tar/sl
-# hdfc : what if 1609783 (seven figure volume) in case of hdfc can be reverse after 6 figure (999999)
-# also look for open=high/low strategy or validation
-# is going down side bcz changes time diff 3 to 6 ??
-# backtest weekends
 with open("token.json") as json_file:
     json_data = json.load(json_file)
     kite_token = json_data["kite_token"]
 
 # from_date = datetime.now().strftime('%Y-%m-%d')
-from_date = "2021-12-20" # do not change anything else (ITS FINALIZED)
+from_date = "2022-08-02"
 to_date = datetime.now().strftime('%Y-%m-%d')
-# MUST TRY : scalping by changing time frame to 2 minute or 1 minute (scalping is what right now)
-
 aroonosc_min = -50
 aroonosc_max = 50
 adx = 50
 min_candle_time = 60
 max_candle_time = 240
-
-# adx_max = 65
-# adx_min = 25
-capital = 238000
+capital = 10000
 frequency = 10
 volume_filter = 20000
-price_filter_min = 100
+price_filter_min = 50
 price_filter_max = 50000
 upper_circuit = 8
 lower_circuit = -8
 upper_circuit_alert = 10
 lower_circuit_alert = -10
 qty_max = 100000
-
-# time_diff_validation = 300 # seconds
-# atr_tar = 3
-# atr_sl = 3
 test_mod = "off"
 emergency_exit = "off"
 qty_one = "off"
 # -----------------------------------------------------------------
-# https://mrjbq7.github.io/ta-lib/index.html
 
 
 def scanning():
@@ -94,13 +76,12 @@ def scanning():
 
             if(df[df.columns[0]].count()):
 
-                # tech analysis ends
+                # tech analysis starts
                 df["ADX"] = tal.ADX(
-                    high=df["high"], low=df["low"], close=df["close"])
-                df["ATR"] = tal.ATR(
                     high=df["high"], low=df["low"], close=df["close"])
                 df["AROONOSC"] = tal.AROONOSC(
                     high=df["high"], low=df["low"], timeperiod=14)
+                # df["ATR"] = tal.ATR(high=df["high"], low=df["low"], close=df["close"])
                 # df["RSI"] = tal.RSI(df['close'])
                 # df["CDLDOJI"] = tal.CDLDOJI(df["open"],df["high"],df["low"],df["close"])
                 # tech analysis ends
@@ -139,17 +120,11 @@ def signal(symbol, data):
         else:
             circuit_validation = "invalid"
 
-        # if ((row["ADX"] < adx_min or row["ADX"] > adx_max) and (row["AROONOSC"] < aroonosc_min or row["AROONOSC"] > aroonosc_max)):
         if ((row["ADX"] > adx) and (row["AROONOSC"] < aroonosc_min or row["AROONOSC"] > aroonosc_max)):
-
-            # print("doji : "+str(row["CDLDOJI"]))
-
             price = (row["open"] + row["high"] + row["low"] + row["close"])/4
-
             orderType = ""
             candleType = ""
             # green doji
-            # if ((row["AROONOSC"] > aroonosc_max) and (row["close"] > row["open"]) and (row["high"] > row["close"])):
             if ((row["AROONOSC"] > aroonosc_max) and (row["close"] > row["open"])):  # uptrend
                 orderType = "BUY"
                 target = row["high"]
@@ -157,7 +132,6 @@ def signal(symbol, data):
                 candle_upper = abs(row["high"]-row["close"])
                 candle_body = abs(row["close"]-row["open"])
                 candle_lower = abs(row["open"]-row["low"])
-                # if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_lower > candle_upper)):  # buying pressure
                 if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_lower > candle_upper)): 
                     orderType = "BUY"
                     candleType = "green"
@@ -165,7 +139,6 @@ def signal(symbol, data):
                     orderType = ""
 
             # red doji
-            # if ((row["AROONOSC"] < aroonosc_min) and (row["close"] < row["open"]) and (row["low"] < row["close"])):
             if ((row["AROONOSC"] < aroonosc_min) and (row["close"] < row["open"])):  # downtrend
                 orderType = "SELL"
                 target = row["low"]
@@ -173,7 +146,6 @@ def signal(symbol, data):
                 candle_upper = abs(row["high"]-row["open"])
                 candle_body = abs(row["open"]-row["close"])
                 candle_lower = abs(row["close"]-row["low"])
-                # if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_upper > candle_upper)):  # buying pressure
                 if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_upper > candle_upper)):
                     orderType = "SELL"
                     candleType = "red"
@@ -215,7 +187,7 @@ def signal(symbol, data):
             #         stoploss = row["high"]
 
             if(orderType == "BUY" or orderType == "SELL"):
-                # RMS
+                # RMS (risk management)
                 rpt = round(((5*capital) / 100)/frequency, 0)
                 qty = round(rpt / 1, 0)
                 if((price-stoploss) != 0):
@@ -229,12 +201,8 @@ def signal(symbol, data):
 
                 margin = capital * 2.5
                 total_price = qty * price
-                # print("QTY : "+str(qty))
                 if(total_price > margin):
                     qty = round((margin / price), 0)
-                    # print("QTY reduced : "+str(qty))
-
-                # to check if tar-price-sl OR sl-price-tar gap is greater than 0.05
 
                 order = {
                     'candle': candleType,
@@ -272,9 +240,6 @@ def signal(symbol, data):
         order_time = (order["time"]).replace('+0530', '')
         timestamp = datetime.strptime(order_time, '%Y-%m-%dT%H:%M:%S')
         timestamp = str(timestamp.hour) + ":" + str(timestamp.minute)
-        # log(" => "+str(timestamp)+" => "+order["type"]+" @ "+str(
-        #     order["price"])+" / SL: "+str(order["stoploss"])+" / TAR : "+str(order["target"])+" / QTY : "+str(order["qty"])+" / volume :"+str(order["volume"]))
-        # log(" => "+str(timestamp)+" => ")
         print(order)
         # windcard filter to escape lower and upper circuits
         # if(order["instrument"] != "symbol name to skip"):
@@ -350,7 +315,6 @@ def order_generation(order_data):
     print(order)
     headers = {'content-type': 'application/x-www-form-urlencoded',
                "authorization": kite_token}
-    # log("ORDER PROCCESED : "+str(order_data["instrument"]))
     log("TRADE LOCK")
     url = "https://kite.zerodha.com/oms/orders/regular"
     response = requests.post(
