@@ -4,6 +4,8 @@
 - refresh token
 - check test mod on
 - open crons
+- crontab -e
+- service cron restart
 ============================
 
 #*/1 15 * * 1-5  cd ~/Web/AlgoTrade/scanner/ && python3 windup.py  > logs/windup/`date +\%H:\%M`.log 2>&1
