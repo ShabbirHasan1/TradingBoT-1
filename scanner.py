@@ -22,7 +22,7 @@ with open("token.json") as json_file:
 
 # from_date = datetime.
 # now().strftime('%Y-%m-%d')
-from_date = "2022-08-02"
+from_date = "2022-08-03"
 to_date = datetime.now().strftime('%Y-%m-%d')
 
 # actual
