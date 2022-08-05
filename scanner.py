@@ -22,7 +22,7 @@ with open("token.json") as json_file:
 
 # from_date = datetime.
 # now().strftime('%Y-%m-%d')
-from_date = "2022-08-03"
+from_date = "2022-08-04"
 to_date = datetime.now().strftime('%Y-%m-%d')
 
 # actual
@@ -31,9 +31,9 @@ to_date = datetime.now().strftime('%Y-%m-%d')
 # adx = 50
 
 # test
-aroonosc_min = -20
-aroonosc_max = 20
-adx = 20
+aroonosc_min = -50
+aroonosc_max = 50
+adx = 50
 
 min_candle_time = 60
 max_candle_time = 240
@@ -49,7 +49,7 @@ lower_circuit_alert = -10
 qty_max = 100000
 test_mod = "off"
 emergency_exit = "off"
-qty_one = "off"
+qty_one = "on"
 # -----------------------------------------------------------------
 
 
@@ -61,7 +61,7 @@ def scanning():
     total_data_points = 0
     log("PROCESSING INSTRUMENTS SYMBOLS")
     print("-----------------------------------------------")
-    df_symbols = pd.read_csv('master/instruments.csv')
+    df_symbols = pd.read_csv('master/instruments_all.csv')
     for index, row in df_symbols.iterrows():
         endpoint = "https://kite.zerodha.com/oms/instruments/historical/"
         code = str(row["instrument_token"])
