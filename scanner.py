@@ -22,7 +22,7 @@ with open("token.json") as json_file:
 
 # from_date = datetime.
 # now().strftime('%Y-%m-%d')
-from_date = "2022-08-04"
+from_date = "2022-08-05"
 to_date = datetime.now().strftime('%Y-%m-%d')
 
 # actual
@@ -49,7 +49,7 @@ lower_circuit_alert = -10
 qty_max = 100000
 test_mod = "off"
 emergency_exit = "off"
-qty_one = "on"
+qty_one = "off"
 # -----------------------------------------------------------------
 
 
