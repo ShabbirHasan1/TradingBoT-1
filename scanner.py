@@ -22,7 +22,7 @@ with open("token.json") as json_file:
 
 # from_date = datetime.
 # now().strftime('%Y-%m-%d')
-from_date = "2022-08-11"
+from_date = "2022-08-12"
 to_date = datetime.now().strftime('%Y-%m-%d')
 
 # actual
@@ -70,7 +70,7 @@ def scanning():
                    "authorization": kite_token}
         url = endpoint + code + interval
         params = (
-            ('user_id', 'VM7727'),
+            ('user_id', 'XMK294'),
             ('oi', '1'),
             ('from', str(from_date)),
             ('to', str(to_date)),
@@ -211,6 +211,12 @@ def signal(symbol, data):
                 total_price = qty * price
                 if(total_price > margin):
                     qty = round((margin / price), 0)
+
+                tradeWindow = abs(target - round(price, 1))
+                if(tradeWindow == 0.05):
+                    target = target + 0.05
+                    # observe and work accordingly
+                print(target)
 
                 order = {
                     'candle': candleType,
