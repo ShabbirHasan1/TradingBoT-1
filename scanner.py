@@ -22,7 +22,7 @@ with open("token.json") as json_file:
 
 # from_date = datetime.
 # now().strftime('%Y-%m-%d')
-from_date = "2022-08-16"
+from_date = "2022-08-17"
 to_date = datetime.now().strftime('%Y-%m-%d')
 
 # actual
@@ -37,7 +37,7 @@ adx = 50
 
 min_candle_time = 60
 max_candle_time = 240
-capital = 10000
+capital = 7300
 frequency = 25
 volume_filter = 20000
 price_filter_min = 50
