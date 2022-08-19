@@ -31,9 +31,9 @@ to_date = datetime.now().strftime('%Y-%m-%d')
 # adx = 50
 
 # test
-aroonosc_min = -50
-aroonosc_max = 50
-adx = 50
+aroonosc_min = -60
+aroonosc_max = 60
+adx = 60
 
 min_candle_time = 60
 max_candle_time = 240
