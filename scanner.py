@@ -22,7 +22,7 @@ with open("token.json") as json_file:
 
 # from_date = datetime.
 # now().strftime('%Y-%m-%d')
-from_date = "2022-08-18"
+from_date = "2022-10-10"
 to_date = datetime.now().strftime('%Y-%m-%d')
 
 # actual
@@ -31,9 +31,9 @@ to_date = datetime.now().strftime('%Y-%m-%d')
 # adx = 50
 
 # test
-aroonosc_min = -60
-aroonosc_max = 60
-adx = 60
+aroonosc_min = -10
+aroonosc_max = 10
+adx = 10
 
 min_candle_time = 60
 max_candle_time = 240
