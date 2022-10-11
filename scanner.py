@@ -217,7 +217,7 @@ def signal(symbol, data):
                 if(tradeWindow == 0.05):
                     target = target + 0.05
                     # observe and work accordingly
-                print(target)
+                # print(target)
 
                 order = {
                     'candle': candleType,
