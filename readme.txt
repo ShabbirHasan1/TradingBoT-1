@@ -1,4 +1,3 @@
-https://cloudstrata.io/install-ta-lib-on-ubuntu-server/
 ============================
 - clean logs
 - dates config
