@@ -49,7 +49,7 @@ lower_circuit_alert = -10
 qty_max = 100000
 test_mod = "off"
 emergency_exit = "off"
-qty_one = "off"
+qty_one = "on"
 # -----------------------------------------------------------------
 
 
@@ -61,8 +61,8 @@ def scanning():
     total_data_points = 0
     log("PROCESSING INSTRUMENTS SYMBOLS")
     print("-----------------------------------------------")
-    # df_symbols = pd.read_csv('master/instruments_all.csv')
-    df_symbols = pd.read_csv('master/instruments.csv')
+    df_symbols = pd.read_csv('master/instruments_all.csv')
+    # df_symbols = pd.read_csv('master/instruments.csv')
     for index, row in df_symbols.iterrows():
         endpoint = "https://kite.zerodha.com/oms/instruments/historical/"
         code = str(row["instrument_token"])
@@ -117,9 +117,13 @@ def signal(symbol, data):
     rpt = 0
     aroonosc_now = 0
     adx_now = 0
+    CombinedHigh = 0
+    CombinedLow = 0
     for index, row in data.iterrows():
         # print(row["CombinedHigh"])
         # print(row["CombinedLow"])
+        CombinedHigh = round(row["CombinedHigh"],2)
+        CombinedLow = round(row["CombinedLow"],2)
 
         adx_now = round(row["ADX"], 2)
         aroonosc_now = round(row["AROONOSC"], 2)
@@ -157,32 +161,32 @@ def signal(symbol, data):
                 candleType = "CombinedLow"
 
             # green doji
-            if ((row["AROONOSC"] > aroonosc_max) and (row["close"] > row["open"])):  # uptrend
-                orderType = "BUY"
-                target = row["high"]
-                stoploss = row["low"]
-                candle_upper = abs(row["high"]-row["close"])
-                candle_body = abs(row["close"]-row["open"])
-                candle_lower = abs(row["open"]-row["low"])
-                if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_lower > candle_upper)): 
-                    orderType = "BUY"
-                    candleType = "green"
-                else:
-                    orderType = ""
+            # if ((row["AROONOSC"] > aroonosc_max) and (row["close"] > row["open"])):  # uptrend
+            #     orderType = "BUY"
+            #     target = row["high"]
+            #     stoploss = row["low"]
+            #     candle_upper = abs(row["high"]-row["close"])
+            #     candle_body = abs(row["close"]-row["open"])
+            #     candle_lower = abs(row["open"]-row["low"])
+            #     if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_lower > candle_upper)): 
+            #         orderType = "BUY"
+            #         candleType = "green"
+            #     else:
+            #         orderType = ""
 
             # red doji
-            if ((row["AROONOSC"] < aroonosc_min) and (row["close"] < row["open"])):  # downtrend
-                orderType = "SELL"
-                target = row["low"]
-                stoploss = row["high"]
-                candle_upper = abs(row["high"]-row["open"])
-                candle_body = abs(row["open"]-row["close"])
-                candle_lower = abs(row["close"]-row["low"])
-                if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_upper > candle_upper)):
-                    orderType = "SELL"
-                    candleType = "red"
-                else:
-                    orderType = ""
+            # if ((row["AROONOSC"] < aroonosc_min) and (row["close"] < row["open"])):  # downtrend
+            #     orderType = "SELL"
+            #     target = row["low"]
+            #     stoploss = row["high"]
+            #     candle_upper = abs(row["high"]-row["open"])
+            #     candle_body = abs(row["open"]-row["close"])
+            #     candle_lower = abs(row["close"]-row["low"])
+            #     if((candle_body > candle_lower) and (candle_body > candle_upper) and (candle_upper > candle_upper)):
+            #         orderType = "SELL"
+            #         candleType = "red"
+            #     else:
+            #         orderType = ""
 
             # green rectangle
             # if ((row["AROONOSC"] > aroonosc_max) and (row["low"] == row["open"]) and (row["high"] == row["close"])):  # uptrend
@@ -266,6 +270,7 @@ def signal(symbol, data):
     if(circuit != 0):
         print("circuit : "+str(circuit) + "%  " + str(row["timestamp"]))
         print("adx : "+str(adx_now) + "  aroonosc : " + str(aroonosc_now))
+        print("combinedHigh : "+str(CombinedHigh) + "  combinedLow : " + str(CombinedLow))
 
     if(dayOpen != 0 and (circuit > upper_circuit_alert or circuit < lower_circuit_alert)):
         print("Trade Alert")
