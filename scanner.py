@@ -93,6 +93,8 @@ def scanning():
                     high=df["high"], low=df["low"], timeperiod=14)
                 df["ATR"] = tal.ATR(high=df["high"], low=df["low"], close=df["close"])
                 df["RSI"] = tal.RSI(df['close'])
+                df["CombinedHigh"] = df["close"].max()
+                df["CombinedLow"] = df["close"].min()
                 # df["CDLDOJI"] = tal.CDLDOJI(df["open"],df["high"],df["low"],df["close"])
                 # tech analysis ends
 
@@ -116,6 +118,9 @@ def signal(symbol, data):
     aroonosc_now = 0
     adx_now = 0
     for index, row in data.iterrows():
+        # print(row["CombinedHigh"])
+        # print(row["CombinedLow"])
+
         adx_now = round(row["ADX"], 2)
         aroonosc_now = round(row["AROONOSC"], 2)
         if(row["timestamp"] == str(tempDayOpenTimestamp) and tempDayOpenCheck == 0):
@@ -133,6 +138,24 @@ def signal(symbol, data):
             price = (row["open"] + row["high"] + row["low"] + row["close"])/4
             orderType = ""
             candleType = ""
+
+            # combined high
+            if ((row["CombinedHigh"] < row["open"]) or (row["CombinedHigh"] < row["open"])):  # uptrend
+                orderType = "BUY"
+                movingPoints = (row["CombinedHigh"] - row["CombinedLow"]) / 2
+                target = row["high"] + movingPoints
+                stoploss = row["low"] - movingPoints
+                candleType = "CombinedHigh"
+            
+            # combined low
+            if ((row["CombinedLow"] > row["close"]) or (row["CombinedLow"] > row["close"])):  # uptrend
+                orderType = "BUY"
+                movingPoints = (row["CombinedHigh"] - row["CombinedLow"]) / 2
+                target = row["low"] - movingPoints
+                stoploss = row["high"] + movingPoints
+                candleType = "green"                
+                candleType = "CombinedLow"
+
             # green doji
             if ((row["AROONOSC"] > aroonosc_max) and (row["close"] > row["open"])):  # uptrend
                 orderType = "BUY"
