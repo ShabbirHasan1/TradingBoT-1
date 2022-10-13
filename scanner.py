@@ -144,17 +144,17 @@ def signal(symbol, data):
             candleType = ""
 
             # combined high
-            if ((row["CombinedHigh"] < row["open"]) or (row["CombinedHigh"] < row["open"])):  # uptrend
+            if ((row["CombinedHigh"] < row["open"]) or (row["CombinedHigh"] < row["close"])):  # uptrend
                 orderType = "BUY"
-                movingPoints = round(((row["CombinedHigh"] - row["CombinedLow"]) / 2),1)
+                movingPoints = abs(round(((row["CombinedHigh"] - row["CombinedLow"]) / 2),1))
                 target = row["high"] + movingPoints
                 stoploss = row["low"] - movingPoints
                 candleType = "CombinedHigh"
             
             # combined low
-            if ((row["CombinedLow"] > row["close"]) or (row["CombinedLow"] > row["close"])):  # uptrend
-                orderType = "BUY"
-                movingPoints = round(((row["CombinedHigh"] - row["CombinedLow"]) / 2),1)
+            if ((row["CombinedLow"] > row["open"]) or (row["CombinedLow"] > row["close"])):  # uptrend
+                orderType = "SELL"
+                movingPoints = abs(round(((row["CombinedHigh"] - row["CombinedLow"]) / 2),1))
                 target = row["low"] - movingPoints
                 stoploss = row["high"] + movingPoints
                 candleType = "green"                
